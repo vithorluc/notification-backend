@@ -1,12 +1,13 @@
-import express from "express";
-import { Request, Response } from "express";
+import dotenv from 'dotenv';
+import { App } from './app';
 
-const app = express();
+dotenv.config();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World");
-});
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+const startServer = async () => {
+  const app = new App(port);
+  app.listen();
+};
+
+startServer();

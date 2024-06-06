@@ -1,13 +1,19 @@
 FROM node:16-alpine
 
-WORKDIR /app
+WORKDIR /usr/local/apps/myapp/dev
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install 
+RUN npm install
 
-COPY . .
+COPY tsconfig.json ./
+
+COPY .env ./
+
+COPY src ./src
+
+RUN npm install -g nodemon
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:watch"]
