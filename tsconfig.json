@@ -14,7 +14,6 @@
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
-      // [""]
     }
   },
   "include": ["src"],

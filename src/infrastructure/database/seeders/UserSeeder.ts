@@ -6,7 +6,11 @@ export class UserSeeder {
     const userRepository = dataSource.getRepository(User);
 
     const users = [
-      { name: "John Doe", email: "john@example.com", phoneNumber: "123456789" },
+      {
+        name: "John Doe",
+        email: "john@example.com",
+        phoneNumber: "123456789",
+      },
     ];
 
     for (const user of users) {

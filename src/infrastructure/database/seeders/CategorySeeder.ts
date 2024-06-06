@@ -6,13 +6,15 @@ export class CategorySeeder {
     const categoryRepository = dataSource.getRepository(Category);
 
     const categories = [
-      { name: 'Sports' },
-      { name: 'Finance' },
-      { name: 'Movies' },
+      { name: "Sports" },
+      { name: "Finance" },
+      { name: "Movies" },
     ];
 
     for (const category of categories) {
-      const existingCategory = await categoryRepository.findOne({ where: { name: category.name } });
+      const existingCategory = await categoryRepository.findOne({
+        where: { name: category.name },
+      });
       if (!existingCategory) {
         const categoryEntity = categoryRepository.create(category);
         await categoryRepository.save(categoryEntity);

@@ -1,8 +1,13 @@
-import { Router } from 'express';
-// import notificationRoutes from './notificationRoutes';
+import { Router } from "express";
+import {
+  createNotification,
+  getNotificationLogs,
+} from "../controllers/NotificationController";
 
 const routes = Router();
 
-// router.use('/notifications', notificationRoutes);
+routes.use("/send-notifications", createNotification);
+routes.use("/health-check", (_, res) => res.send("OK"));
+routes.get("/notification-logs", getNotificationLogs);
 
 export default routes;

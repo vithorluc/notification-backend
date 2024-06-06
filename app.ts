@@ -1,8 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import router from "./src/presentention/routes/routes";
 import AppDataSource from "./src/infrastructure/database/ormconfig";
-import { connectToRedis } from "./src/infrastructure/queue";
-import { Seeder } from "./src/infrastructure/database/seeders/runSeeders"
+import { connectToRedis } from "./src/infrastructure/queue/connection";
+import { Seeder } from "./src/infrastructure/database/seeders/runSeeders";
 
 export class App {
   public app: Application;
@@ -23,22 +23,33 @@ export class App {
   }
 
   private async initializeDatabase(): Promise<void> {
-    try {
-      await AppDataSource.initialize();
-      console.log("Database connection established");
-      await Seeder.run(AppDataSource);
-      console.log("Database seeders successful");
-      
-      return;
-    } catch (error) {
-      console.error("Database connection error:", error);
-      process.exit(1);
+    const maxRetries = 5;
+    let retries = 0;
+
+    while (retries < maxRetries) {
+      try {
+        await AppDataSource.initialize();
+        console.log("Database connection established");
+        await Seeder.run(AppDataSource);
+        console.log("Database seeders successful");
+        return;
+      } catch (error) {
+        retries++;
+        console.error(`Database connection error (attempt ${retries}):`, error);
+        if (retries < maxRetries) {
+          console.log(`Retrying in ${retries * 2} seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, retries * 2000));
+        } else {
+          console.error("Max retries reached. Exiting...");
+          process.exit(1);
+        }
+      }
     }
   }
 
   private async initializeRedis(): Promise<void> {
     try {
-      await connectToRedis();   
+      await connectToRedis();
       console.log("Redis connection established");
     } catch (error) {
       console.error("Redis connection error:", error);

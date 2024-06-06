@@ -1,36 +1,27 @@
-# Notification System
+### Notification Service
 
-## Overview
+This project provides a notification service built with Node.js, TypeScript, TypeORM, and Express. It allows you to send notifications and log them into a database. Additionally, it provides endpoints to retrieve the logs and check the service health.
 
-This project is a notification system that categorizes messages into Sports, Finance, and Movies. It supports three types of notifications: SMS, Email, and Push Notification. Notifications are logged in a database but not actually sent.
+### Table of Contents
 
-## Project Structure
+1. [Features](#features)
+2. [Database Schema](#database-schema)
+3. [API Endpoints](#api-endpoints)
+4. [Getting Started](#getting-started)
+5. [Running the Project](#running-the-project)
 
-```
-my-app/
-├── Dockerfile
-├── docker-compose.yml
-├── .dockerignore
-├── .env
-├── ormconfig.json
-├── package.json
-├── package-lock.json
-├── src/
-│   ├── app.ts
-│   ├── entity/
-│   │   ├── Category.ts
-│   │   ├── NotificationLog.ts
-│   │   ├── NotificationType.ts
-│   │   ├── User.ts
-│   │   ├── UserNotificationChannel.ts
-│   │   └── UserSubscription.ts
-│   └── ...
-└── README.md
-```
+### Features
 
-## Database Tables
+- **Send Notifications**: Send notifications with different categories and types.
+- **Log Notifications**: Log all notifications into the database.
+- **Retrieve Logs**: Retrieve logs of all notifications, sorted from newest to oldest.
+- **Health Check**: Check the health status of the service.
 
-### Users
+### Database Schema
+
+The database consists of the following tables:
+
+#### Users
 
 | Column      | Type    | Description         |
 | ----------- | ------- | ------------------- |
@@ -39,21 +30,21 @@ my-app/
 | email       | VARCHAR | User's email        |
 | phoneNumber | VARCHAR | User's phone number |
 
-### Categories
+#### Categories
 
 | Column | Type    | Description   |
 | ------ | ------- | ------------- |
 | id     | INT     | Primary Key   |
 | name   | VARCHAR | Category name |
 
-### NotificationTypes
+#### NotificationTypes
 
 | Column | Type    | Description            |
 | ------ | ------- | ---------------------- |
 | id     | INT     | Primary Key            |
 | name   | VARCHAR | Notification type name |
 
-### UserSubscriptions
+#### UserSubscriptions
 
 | Column     | Type | Description               |
 | ---------- | ---- | ------------------------- |
@@ -61,7 +52,7 @@ my-app/
 | userId     | INT  | Foreign Key to Users      |
 | categoryId | INT  | Foreign Key to Categories |
 
-### UserNotificationChannels
+#### UserNotificationChannels
 
 | Column             | Type | Description                      |
 | ------------------ | ---- | -------------------------------- |
@@ -69,7 +60,7 @@ my-app/
 | userId             | INT  | Foreign Key to Users             |
 | notificationTypeId | INT  | Foreign Key to NotificationTypes |
 
-### NotificationLogs
+#### NotificationLogs
 
 | Column             | Type      | Description                      |
 | ------------------ | --------- | -------------------------------- |
@@ -80,77 +71,137 @@ my-app/
 | message            | TEXT      | Notification message             |
 | timestamp          | TIMESTAMP | Time of notification             |
 
-## Environment Variables
+### API Endpoints
 
-Create a `.env` file in the root directory and add the following environment variables:
+#### POST /send-notifications
 
+Send a notification and log it into the database.
+
+**Payload:**
+
+```json
+{
+  "message": "Test Message",
+  "category_id": "1",
+  "notification_type_id": "1"
+}
 ```
-# Redis configuration
-REDIS_HOST=redis
-REDIS_PORT=6379
 
-# MySQL configuration
-MYSQL_HOST=mysql
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=rootpassword
-MYSQL_DATABASE=notifications
+#### GET /notification-logs
+
+Retrieve the logs of all notifications, sorted from newest to oldest.
+
+**Response:**
+
+```json
+[
+  {
+    "id": 2,
+    "message": "Test Message",
+    "timestamp": "2024-06-06T18:22:11.000Z",
+    "user": null,
+    "category": {
+      "id": 1,
+      "name": "Sports"
+    },
+    "notificationType": {
+      "id": 1,
+      "name": "SMS"
+    }
+  },
+  {
+    "id": 1,
+    "message": "Test Message",
+    "timestamp": "2024-06-06T18:17:26.000Z",
+    "user": null,
+    "category": {
+      "id": 1,
+      "name": "Sports"
+    },
+    "notificationType": {
+      "id": 1,
+      "name": "SMS"
+    }
+  }
+]
 ```
 
-## Commands
+#### GET /health-check
 
-### Build and Run the Project
+Check the health status of the service.
 
-To build and run the project using Docker Compose:
+**Response:**
+
+```text
+OK
+```
+
+### Getting Started
+
+Follow these steps to get the project up and running:
+
+1. **Clone the repository:**
+
+   ```sh
+   git clone <repository_url>
+   cd <repository_directory>
+   ```
+
+2. **Install dependencies:**
+
+   ```sh
+   npm install
+   ```
+
+3. **Create environment variables file:**
+   Create a `.env` file in the root directory with the following content:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USERNAME=user
+   DB_PASSWORD=password
+   DB_DATABASE=notifications
+   REDIS_URL=redis://localhost:6379
+   ```
+
+### Running the Project
+
+1. **Start Docker containers:**
+   Make sure Docker is installed and running on your machine, then start the services with Docker Compose.
+
+   ```sh
+   docker compose up
+   ```
+
+2. **Run the application:**
+   ```sh
+   npm start
+   ```
+
+The application should now be running and accessible at `http://localhost:3000`.
+
+### Example Requests
+
+**Sending a Notification:**
 
 ```sh
-docker-compose up --build
-```
-
-### Install Dependencies
-
-To install project dependencies:
-
-```sh
-npm install
-```
-
-### TypeORM Commands
-
-To run TypeORM commands, use:
-
-```sh
-npx typeorm <command>
-```
-
-For example, to synchronize the database schema:
-
-```sh
-npx typeorm schema:sync
-```
-
-## Usage
-
-### Starting the Application
-
-After running `docker-compose up --build`, the application will be accessible at `http://localhost:3000`.
-
-### Sending a Notification
-
-To queue a notification, make a POST request to `/send-notification` with a JSON body containing `message`, `category`, and `userId`. Example using `curl`:
-
-```sh
-curl -X POST http://localhost:3000/send-notification -H "Content-Type: application/json" -d '{
-  "message": "Your message here",
-  "category": "Sports",
-  "userId": 1
+curl -X POST http://localhost:3000/api/send-notifications \
+-H "Content-Type: application/json" \
+-d '{
+    "message": "Test Message",
+    "category_id": "1",
+    "notification_type_id": "1"
 }'
 ```
 
-## License
+**Retrieving Notification Logs:**
 
-This project is licensed under the MIT License.
+```sh
+curl http://localhost:3000/api/notification-logs
+```
 
----
+**Health Check:**
 
-This README provides a clear structure for understanding, setting up, and running the project, including database details, environment configuration, and usage instructions.
+```sh
+curl http://localhost:3000/api/health-check
+```

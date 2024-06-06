@@ -14,7 +14,10 @@ export class NotificationLog {
   @ManyToOne(() => Category, (category) => category.notificationLogs)
   category: Category;
 
-  @ManyToOne(() => NotificationType, (notificationType) => notificationType.notificationLogs)
+  @ManyToOne(
+    () => NotificationType,
+    (notificationType) => notificationType.notificationLogs
+  )
   notificationType: NotificationType;
 
   @Column("text")
