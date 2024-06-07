@@ -39,6 +39,7 @@ export class NotificationService implements INotificationService {
     notificationLog.notificationType = notificationType;
     notificationLog.message = message;
     notificationLog.timestamp = new Date();
+    notificationLog.user = user;
 
     await this.notificationLogRepository.save(notificationLog);
 

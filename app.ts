@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import cors from "cors";
 import router from "./src/presentention/routes/routes";
 import AppDataSource from "./src/infrastructure/database/ormconfig";
 import { connectToRedis } from "./src/infrastructure/queue/connection";
@@ -20,6 +21,7 @@ export class App {
 
   private initializeMiddlewares(): void {
     this.app.use(express.json());
+    this.app.use(cors());
   }
 
   private async initializeDatabase(): Promise<void> {
